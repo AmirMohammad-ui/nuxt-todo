@@ -43,17 +43,18 @@ import BaseDivider from "~/components/UI/BaseDivider.vue";
 import TodoItems from "~/components/Todos/TodoItems";
 export default {
   components: { TodoItems, BaseDivider, BaseInput },
-  asyncData() {
+  asyncData({error}) {
     axios.defaults.baseURL = "http://localhost:4400";
     return axios
       .get("/todos")
       .then(res => ({todos:res.data.todos}))
-      .catch((e) => context.error());
+      .catch((e) => error());
   },
 };
 </script>
 
 <style>
+
 .done-todos {
   background: #00ffcc38;
   color: #00745d;

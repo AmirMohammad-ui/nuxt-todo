@@ -5,7 +5,7 @@
   >
     <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{alertMessage}}</base-alert>
     <div class="flex items-center justify-between p-2">
-      <div @click="thisIsDone(id)" class="flex items-center space-x-5 cursor-pointer">
+      <div @click="thisIsDone(id)" class="flex items-center space-x-5 cursor-pointer -z-1000">
         <div class="relative">
           <svg
             width="19"
@@ -104,7 +104,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 
 </style>

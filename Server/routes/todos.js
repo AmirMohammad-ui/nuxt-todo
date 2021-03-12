@@ -2,6 +2,7 @@ const express = require("express")
 const Todo = require("../models/todo")
 const router = express.Router()
 
+//  GETTING ALL THE TODOS
 router.route("/todos").get(async (_,res)=>{
   try {
     const todos = await Todo.find({})
@@ -10,6 +11,7 @@ router.route("/todos").get(async (_,res)=>{
     res.status(err.statusCode || 500).json({success:0,message:err.message||"Coudn't get todos for some reasons."})
   }
 })
+//  POSTING A NEW TODO
 router.route("/new").post(async (req,res)=>{
   try {
     const newTodo = req.body
@@ -19,6 +21,7 @@ router.route("/new").post(async (req,res)=>{
     res.status(err.statusCode||500).json({success: 0,message:err.message || "Something went wrong during the registering new todo."})
   }
 })
+// UPDATING THE TODO STATUS
 router.route("/done").get(async(req,res) => {
   try{ 
     const id = req.query.id
@@ -35,6 +38,7 @@ router.route("/done").get(async(req,res) => {
     res.status(err.statusCode || 500).json({success:0,message:err.message || "Something went wrong."})
   }
 })
+//  DELETING THE TODO
 router.route("/delete").get(async(req,res)=>{
   try {
     const id = req.query.id
@@ -44,6 +48,18 @@ router.route("/delete").get(async(req,res)=>{
     res.status(200).json({success: 0,message:"Todo delete successfully."})
   } catch(err){
     res.status(err.statusCode || 500 ).json({success: 0,message: err.message || "Couldn't delete the todo for some reasons."})
+  }
+})
+// FINDING A TODO 
+router.route("/find").get(async (req,res)=>{
+  try{
+    const q = req.query.text
+    if(q === '' || q === null) return res.status(400).json({success: 0,message:"Please enter the query you are looking for."})
+    const todos  = await Todo.find({topic: {$regex: new RegExp(q)}})
+    if(todos.length === 0) return res.status(404).json({success: 0,message: "Couln't find the todo you are looking for."})
+    res.status(200).json({success:1,message: `Found ${todos.length} todos.`,todos})
+  }catch(err){
+    res.status(err.statusCode || 500).json({success: 0,message: err.message || "Something went wrong while finding the todo."})
   }
 })
 module.exports = router

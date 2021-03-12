@@ -2,7 +2,7 @@
   <div>
     <TheHeader @open-modal="openModal"/>
     <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{alertMessage}}</base-alert>
-    <base-modal @close-modal="isModalOpen = false" v-if="isModalOpen">
+    <base-modal @close-modal="isModalOpen = false" title="New Todo" v-if="isModalOpen">
       <div class="grid grid-cols-1 sm:grid-cols-3">
         <div class="mx-5 mb-3 sm:col-span-1">
           <base-input type="text" label="Topic" @theValueInput="inputValChanged"/>
@@ -66,8 +66,8 @@ export default {
         return
       }
       axios.post("/new",{topic:this.topic,description: this.description},{headers:{"ContentType":"application/json"}})
-      .then(res=> {this.showAlert(res.data);this.$nuxt.refresh()})
-      .catch(err=>this.showAlert(err.response.data))
+      .then(res=> {this.showAlert(res.data);this.isModalOpen = !this.isModalOpen;this.$nuxt.refresh()})
+      .catch(err=>{this.showAlert(err.response.data);this.isModalOpen = !this.isModalOpen;})
     },
     showAlert(data){
       this.alertMessage = data.message
