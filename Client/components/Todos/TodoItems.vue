@@ -3,18 +3,19 @@
     class="flex flex-col p-3"
     :class="{ 'bg-indigo-100': !isDone, 'bg-green-100': isDone }"
   >
-    <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{alertMessage}}</base-alert>
+    <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{
+      alertMessage
+    }}</base-alert>
     <div class="flex items-center justify-between p-2">
-      <div @click="thisIsDone(id)" class="flex items-center space-x-5 cursor-pointer -z-1000">
+      <div
+        @click="thisIsDone(id)"
+        class="flex items-center space-x-5 cursor-pointer -z-1000"
+      >
         <div class="relative">
-          <svg
-            width="19"
-            height="19"
-            viewBox="0 0 19 19"
-          >
+          <svg width="19" height="19" viewBox="0 0 19 19">
             <path
               d="M16.8889 0H2.11111C0.95 0 0 0.95 0 2.11111V16.8889C0 18.05 0.95 19 2.11111 19H16.8889C18.05 19 19 18.05 19 16.8889V2.11111C19 0.95 18.05 0 16.8889 0ZM16.8889 16.8889H2.11111V2.11111H16.8889V16.8889Z"
-              :fill="isDone ? '#00745D' : '#6C5CE7' "
+              :fill="isDone ? '#00745D' : '#6C5CE7'"
             />
           </svg>
           <svg
@@ -29,13 +30,17 @@
               d="M23.995 0.000434763C23.7352 0.0081759 23.4886 0.116755 23.3075 0.303169L8.01449 15.5961L1.72152 9.30317C1.62937 9.2072 1.51901 9.13057 1.39688 9.07779C1.27475 9.025 1.14332 8.99712 1.01027 8.99576C0.877234 8.99441 0.745261 9.01962 0.622083 9.06991C0.498906 9.12019 0.387001 9.19456 0.292923 9.28863C0.198844 9.38271 0.124482 9.49462 0.0741933 9.61779C0.0239041 9.74097 -0.00130181 9.87295 5.17615e-05 10.006C0.00140533 10.139 0.0292912 10.2705 0.0820761 10.3926C0.134861 10.5147 0.211484 10.6251 0.307457 10.7172L7.30746 17.7172C7.495 17.9047 7.74932 18.01 8.01449 18.01C8.27966 18.01 8.53398 17.9047 8.72152 17.7172L24.7215 1.71723C24.866 1.57677 24.9647 1.39593 25.0047 1.19841C25.0446 1.00089 25.024 0.795905 24.9455 0.610319C24.8669 0.424733 24.7341 0.267204 24.5645 0.158375C24.3949 0.0495457 24.1964 -0.0055056 23.995 0.000434763V0.000434763Z"
               fill="#00745D"
             />
-            </svg>
+          </svg>
         </div>
         <p
           class="text-2xl font-semibold"
-          :class="{ 'text-gray-600': !isDone, 'text-green-600': isDone,'line-through': isDone }"
+          :class="{
+            'text-gray-600': !isDone,
+            'text-green-600': isDone,
+            'line-through': isDone,
+          }"
         >
-          {{topic}}
+          {{ topic }}
         </p>
       </div>
       <div>
@@ -56,54 +61,65 @@
     <div>
       <p
         class="p-5 text-xl font-light"
-        :class="{ 'text-gray-600': !isDone, 'text-green-600': isDone,'line-through': isDone }"
+        :class="{
+          'text-gray-600': !isDone,
+          'text-green-600': isDone,
+          'line-through': isDone,
+        }"
       >
-        {{description}}
+        {{ description }}
       </p>
     </div>
   </div>
 </template>
 
 <script>
-import BaseAlert from "~/components/UI/BaseAlert"
-import axios from "axios"
+import BaseAlert from "~/components/UI/BaseAlert";
+import axios from "axios";
 export default {
-  components: {BaseAlert},
-  props: ['isDone','topic','description','id'],
-  data(){
-    return{
+  components: { BaseAlert },
+  props: ["isDone", "topic", "description", "id"],
+  emits: ["done", "delete", "fresh-todos"],
+  data() {
+    return {
       alertOpen: false,
-      alertMessage: '',
-      alertTitle: '',
-      alertSuccess: null
-    }
+      alertMessage: "",
+      alertTitle: "",
+      alertSuccess: null,
+    };
   },
-  methods:{
-    thisIsDone(id){
-      axios.get("/done",{params:{id}})
-      .then(res=>{this.showAlert(res.data);this.$nuxt.refresh()})
-      .catch(err=> this.showAlert(err.response.data))
+  methods: {
+    thisIsDone(id) {
+      axios
+        .get("/done", { params: { id } })
+        .then((res) => {
+          this.showAlert(res.data);
+          this.$emit("done", res.data.todos);
+        })
+        .catch((err) => this.showAlert(err.response.data));
     },
-    deleteTodo(id){
-      axios.get("/delete",{params:{id}})
-      .then(res=>{this.showAlert(res.data);this.$nuxt.refresh()})
-      .catch(err=> this.showAlert(err.response.data))
+    deleteTodo(id) {
+      axios
+        .get("/delete", { params: { id } })
+        .then((res) => {
+          this.showAlert(res.data);
+          this.$emit("delete", res.data.todos);
+        })
+        .catch((err) => this.showAlert(err.response.data));
     },
-    showAlert(data){
-      this.alertMessage = data.message
-      this.alertSuccess = data.success
-      this.alertTitle = data.success === 1 ? 'Successful':'Error'
-      this.alertOpen = true
-      setTimeout(()=>{
-        this.alertOpen = false
-      },2000)
-    }
+    showAlert(data) {
+      this.alertMessage = data.message;
+      this.alertSuccess = data.success;
+      this.alertTitle = data.success === 1 ? "Successful" : "Error";
+      this.alertOpen = true;
+      setTimeout(() => {
+        this.alertOpen = false;
+      }, 2000);
+    },
   },
-  created(){
-    axios.defaults.baseURL = "http://localhost:4400"
-  }
+  created() {
+    axios.defaults.baseURL = "http://localhost:4400";
+  },
 };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

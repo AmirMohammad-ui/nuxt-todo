@@ -1,14 +1,8 @@
 
 <script>
 export default {
-  asyncData({ redirect }) {
-    redirect("/all-todos")
-  },
-  data() {
-    return {};
+  mounted() {
+    this.$router.push("/all-todos")
   },
 };
 </script>
-<style scoped>
-  
-</style>

@@ -2,87 +2,117 @@
   <div>
     <base-modal v-if="isModalOpen" title="Results" @close-modal="closeSearchResultBox">
       <ul class="grid grid-cols-1 lg:grid-cols-2">
-        <li
-          class="m-5"
-          v-for="todo in todosFound"
-          :key="todo._id"
-        >
+        <li class="m-5" v-for="todo in todosFound" :key="todo._id">
           <todo-items
+            @done="newTodos"
+            @delete="newTodos"
             :topic="todo.topic"
             :description="todo.description"
             :id="todo._id"
-            :isDone="todo.isDone"/>
+            :isDone="todo.isDone"
+          />
         </li>
       </ul>
     </base-modal>
-    <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{alertMessage}}</base-alert>
-    <header class="flex items-center content-center justify-between w-full p-8 mb-10 bg-gray-200">
+    <base-alert v-if="alertOpen" :success="alertSuccess" :title="alertTitle">{{
+      alertMessage
+    }}</base-alert>
+    <header
+      class="flex items-center content-center justify-between w-full p-8 mb-10 bg-gray-200"
+    >
       <ul class="flex space-x-10 text-gray-600">
         <li class="float-left">
-          <nuxt-link class="p-6 border border-gray-300 hover:bg-gray-100" to="/all-todos">All Todos</nuxt-link>  
-        </li>
-        <li class="float-left">
-          <button @click="$emit('open-modal',$event)" class="focus:border-none focus:outline-none focus:ring-0">New Todo</button>  
+          <button
+            @click="$emit('open-modal', $event)"
+            class="focus:border-none focus:outline-none focus:ring-0"
+          >
+            New Todo
+          </button>
         </li>
       </ul>
-      <div class="float-left">
+      <div class="flex float-left space-x-10">
         <form @submit.prevent="findTodos">
-          <input class="p-5 text-xl shadow focus:shadow-md" placeholder="Search For A Todo" v-model="text">
-          <button type="submit" class="p-5 text-xl font-light text-gray-100 bg-indigo-900 focus:border-none focus:outline-none">Search</button>
+          <input
+            class="p-5 text-xl shadow focus:shadow-md"
+            placeholder="Search For A Todo"
+            v-model="text"
+          />
+          <button
+            type="submit"
+            class="p-5 text-xl font-light text-gray-100 bg-indigo-900 focus:border-none focus:outline-none"
+          >
+            Search
+          </button>
         </form>
       </div>
-  </header>
+    </header>
   </div>
 </template>
 <script>
-import axios from "axios"
-import TodoItems from "~/components/Todos/TodoItems"
-import BaseAlert from "~/components/UI/BaseAlert"
-import BaseModal from "~/components/UI/BaseModal"
+import axios from "axios";
+import TodoItems from "~/components/Todos/TodoItems";
+import BaseAlert from "~/components/UI/BaseAlert";
+import BaseModal from "~/components/UI/BaseModal";
 export default {
-  components: {BaseAlert,BaseModal,TodoItems},
-  data(){
+  components: { BaseAlert, BaseModal, TodoItems },
+  data() {
     return {
-      text: '',
+      text: "",
       todosFound: null,
       alertOpen: false,
-      alertMessage: '',
-      alertTitle: '',
+      alertMessage: "",
+      alertTitle: "",
       alertSuccess: null,
-      isModalOpen: false
-    }
+      isModalOpen: false,
+    };
   },
   methods: {
-    findTodos(){
-      axios.get("/find",{params: {text:this.text}})
-      .then(res=> {this.showAlert({success: 1,message: res.data.message});this.todosFound = res.data.todos;this.showSearchResult()})
-      .catch(err=>this.showAlert({success: 0,message: err.response.data.message || "Something went wrong finding todos."}))
+    findTodos() {
+      axios
+        .get("/find", { params: { text: this.text } })
+        .then((res) => {
+          this.showAlert({ success: 1, message: res.data.message });
+          this.todosFound = res.data.todos;
+          this.showSearchResult();
+        })
+        .catch((err) => {
+            this.showAlert({
+              success: 0,
+              message: err.response.data.message || "Something went wrong finding todos.",
+            });
+        });
     },
-    showAlert(data){
-      this.alertMessage = data.message
-      this.alertSuccess = data.success
-      this.alertTitle = data.success === 1 ? 'Successful':'Error'
-      this.alertOpen = true
-      setTimeout(()=>{
-        this.alertOpen = false
-      },2000)
+    showAlert(data) {
+      this.alertMessage = data.message;
+      this.alertSuccess = data.success;
+      this.alertTitle = data.success === 1 ? "Successful" : "Error";
+      this.alertOpen = true;
+      setTimeout(() => {
+        this.alertOpen = false;
+      }, 2000);
     },
-    showSearchResult(){
-      this.isModalOpen = true
+    showSearchResult() {
+      this.isModalOpen = true;
     },
-    closeSearchResultBox(){
-      this.isModalOpen = false
+    closeSearchResultBox() {
+      this.isModalOpen = false;
+    },
+    newTodos(todos){
+      axios.get("/find",{params:{text:this.text}})
+        .then(res=>this.todosFound = res.data.todos)
+        .catch(err=>this.showAlert(err.response.data))
+      this.$emit('new-todos',todos)
     }
   },
-  mounted(){
-    axios.defaults.baseURL = "http://localhost:4400"
-  }
-}
+  mounted() {
+    axios.defaults.baseURL = "http://localhost:4400";
+  },
+};
 </script>
 <style scoped>
-@media (max-width: 580px){
-  header{
-    flex-direction: column; 
+@media (max-width: 580px) {
+  header {
+    flex-direction: column;
   }
   header > div {
     margin-top: 3rem;

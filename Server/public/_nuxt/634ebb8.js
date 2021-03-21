@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[4],{210:function(n,e,o){"use strict";o.r(e);var t={mounted:function(){this.$router.push("/all-todos")}},d=o(29),component=Object(d.a)(t,undefined,undefined,!1,null,null,null);e.default=component.exports}}]);

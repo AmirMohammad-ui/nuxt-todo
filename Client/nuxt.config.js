@@ -1,5 +1,6 @@
 import {resolve} from "path"
 export default {
+  ssr: false,
   alias: {
     'images': resolve(__dirname,'./assets/images'),
     'UI': resolve(__dirname, './components/UI'),
