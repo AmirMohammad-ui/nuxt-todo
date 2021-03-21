@@ -33,9 +33,9 @@ app.use(express.json())
 app.use(cors())
 app.use(apis)
 if(process.env.NODE_ENV==='production'){
-  app.use(express.static(path.join(__dirname, '../Client/assets')))
+  app.use(express.static(path.join(__dirname, 'public')))
   app.get(/.*/, (_, res) => {
-    res.sendFile(path.join(__dirname,'./public','index.html'))
+    res.sendFile(path.join(__dirname,'public','index.html'))
   })
 }
 
