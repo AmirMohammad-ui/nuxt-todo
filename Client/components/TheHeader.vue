@@ -105,7 +105,7 @@ export default {
     }
   },
   mounted() {
-    axios.defaults.baseURL = "http://localhost:4400";
+    // axios.defaults.baseURL = "http://localhost:4400";
   },
 };
 </script>

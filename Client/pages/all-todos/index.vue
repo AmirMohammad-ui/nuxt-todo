@@ -151,7 +151,7 @@ export default {
     }
   },
   mounted() {
-    axios.defaults.URL = "http://localhost:4400";
+    // axios.defaults.URL = "http://localhost:4400";
     this.getTodos();
   },
 };
